@@ -1,7 +1,7 @@
 * 테스트 리포트 가시화 추가
   - workspace 내의 test 결과 출력되는 위치 확인
   - 빌드후 조치 > Publish Junit test result report 추가
-    * Test report XMLs 에 **/test/TEST-*.xml 추가
+    * Test report XMLs 에 **/build/**/TEST-*.xml 추가
   - 빌드후 테스트 결과 확인
 
 * 테스트 커버리지 가시화 추가
