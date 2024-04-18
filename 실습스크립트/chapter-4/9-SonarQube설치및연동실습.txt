@@ -16,6 +16,7 @@
     sonarqube:lts-community
 
 * SonarQube 프로젝트 및 접근 키 생성
+squ_d47cc0749c5a0e53951c17e4e74c79c110a51db9
   - 프로젝트 생성
     - http://localhost:9000/projects
     - Create Project > Manually
