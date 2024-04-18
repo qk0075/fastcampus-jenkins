@@ -56,7 +56,7 @@ def minus(a, b = 0) {
 println("minus(a, b) = ${minus(a)}" )
 
 // return 을 쓰지 않으면 마지막 평가결과가 리턴
-def multiple(a, b) {
+def multiply(a, b) {
     a * b
 }
 
