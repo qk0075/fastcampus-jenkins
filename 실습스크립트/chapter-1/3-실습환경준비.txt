@@ -2,7 +2,6 @@
     mkdir ~/practice; cd ~/practice
 
 * SSH 키 생성
-
     docker run --rm -it --entrypoint /keygen.sh linuxserver/openssh-server
 
     ~/practice/key/private.key 에 private key 를
