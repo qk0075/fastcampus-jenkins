@@ -16,12 +16,11 @@ pipeline {
         githubProjectProperty(displayName: '', projectUrlStr: 'https://github.com/fastcampus-jenkins/fastcampus-jenkins')
         // 디폴트 checkout skip 설정 제거
     }
+    
+    triggers {
+        issueCommentTrigger('.*(test this|build this|deploy this).*')
+    }
 
-      triggers {
-            issueCommentTrigger('.*(test this|build this|deploy this).*')
-      }
-      
-  
     // stages > stage > steps 순으로 구성
     stages {
         stage('Build') {
@@ -37,10 +36,10 @@ pipeline {
 
         stage('SonarScanner') {
             when {
-                  expression {
-                      return isSonarQubeNecessary()
-                  }
-              }
+                expression {
+                    return isSonarQubeNecessary()
+                }
+            }
             steps {
                 // sonarqube 환경하에서, 실행
                 withSonarQubeEnv("sonarqube-server") {
@@ -72,7 +71,7 @@ pipeline {
             script {
                 if (isNotificationNecessary()) {
                     mineRepository()
-                    emailext attachLog: true, body: email_content(), subject: email_subject(), to: 'junoyoon@gmail.com'
+                    emailext attachLog: true, body: email_content(), subject: email_subject(), to: '[각자의이메일주소]'
                     slackSend(channel: "#jenkins", message: "${custom_msg(currentBuild.currentResult)}")
                 }
             }
@@ -80,28 +79,25 @@ pipeline {
 
         success {
             script {
-                  if (params.DEPLOY_ENABLED == true) {
-                     archiveArtifacts artifacts: 'projects/spring-app/build/libs/*-SNAPSHOT.jar', followSymlinks: false
-                     build(
-                             job: 'pipeline-deploy',
-                             parameters: [booleanParam(name: 'ARE_YOU_SURE', value: "true")],
-                             wait: false,
-                             propagate: false
-                      )
-                  }
-                  if (isPr()) {
-                      echo "pipeline-deploy 실행"
-                      if (env.CHANGE_ID) {
+                if (params.DEPLOY_ENABLED == true) {
+                    archiveArtifacts artifacts: 'projects/spring-app/build/libs/*-SNAPSHOT.jar', followSymlinks: false
+                    build(
+                        job: 'pipeline-deploy',
+                        parameters: [booleanParam(name: 'ARE_YOU_SURE', value: "true")],
+                        wait: false,
+                        propagate: false
+                    )
+                }
+                if (isPr()) {
+                    echo "pipeline-deploy 실행"
+                    if (env.CHANGE_ID) {
                         pullRequest.comment('This PR invoked pipeline-deploy..')
-                      }
-                  }
+                    }
+                }
             }
         }
     }
 }
-
-
-
 
 // pipeline 바깥쪽 영역은 groovy 사용 가능
 def email_content() {
@@ -120,14 +116,12 @@ def custom_msg(status) {
     return " $status: Job [${env.JOB_NAME}] Logs path: ${env.BUILD_URL}/consoleText"
 }
 
-
-
 def isSonarQubeNecessary() {
     return isMainOrDevelop()
 }
 
 def isDeploymentNecessary() {
-  return isMainOrDevelop() || (env.GITHUB_COMMENT ?: "").contains("deploy this")
+    return isMainOrDevelop() || (env.GITHUB_COMMENT ?: "").contains("deploy this")
 }
 
 def isNotificationNecessary() {
